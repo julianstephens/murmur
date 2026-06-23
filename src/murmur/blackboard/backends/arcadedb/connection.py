@@ -2,10 +2,11 @@ from __future__ import annotations
 
 import threading
 from dataclasses import dataclass
+from importlib import import_module
 from types import TracebackType
 from typing import Any
 
-from ...errors import ConnectionPoolExhaustedError
+from ...errors import BackendConnectionError, ConnectionPoolExhaustedError
 from .config import ArcadeDBConfig
 
 
@@ -42,12 +43,31 @@ class ConnectionPool:
             if len(self._connections) >= self._config.max_connections:
                 msg = "ArcadeDB connection pool exhausted"
                 raise ConnectionPoolExhaustedError(msg)
-            self._connections.append(None)
-            self._local.database = None
+            db = self._create_database()
+            self._connections.append(db)
+            self._local.database = db
             return ThreadLocalConnection(self._local.database)
+
+    def _create_database(self) -> Any:
+        try:
+            module = import_module("arcadedb")
+        except Exception as exc:
+            msg = "ArcadeDB client library is not installed"
+            raise BackendConnectionError(msg) from exc
+
+        database_class = getattr(module, "Database", None)
+        if database_class is None:
+            msg = "ArcadeDB Database class was not found in the installed package"
+            raise BackendConnectionError(msg)
+
+        return database_class(self._config.database_path)
 
     def close_all(self) -> None:
         with self._lock:
+            for connection in self._connections:
+                close = getattr(connection, "close", None)
+                if callable(close):
+                    close()
             self._connections.clear()
             if hasattr(self._local, "database"):
                 del self._local.database

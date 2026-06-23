@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 from ..backends.base import BackendAdapter
+from ..edges.registry import EdgeTypeDefinition
+from ..nodes.registry import NodeTypeDefinition
 
 
 class SchemaManager:
@@ -8,7 +10,9 @@ class SchemaManager:
         self._adapter = adapter
 
     def initialize(
-        self, application_node_extensions, application_edge_extensions
+        self,
+        application_node_extensions: list[NodeTypeDefinition],
+        application_edge_extensions: list[EdgeTypeDefinition],
     ) -> None:
         """Initialize backend schema and register application-specific extensions."""
         raise NotImplementedError
