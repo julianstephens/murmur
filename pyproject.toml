@@ -1,0 +1,29 @@
+[project]
+name = "murmur"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "Julian Stephens", email = "julian@julianstephens.net" }
+]
+requires-python = ">=3.14"
+dependencies = [
+    "psycopg[binary]>=3.3.4",
+    "pydantic>=2.13.4",
+]
+
+[project.scripts]
+murmur = "murmur:main"
+
+[build-system]
+requires = ["uv_build>=0.11.17,<0.12.0"]
+build-backend = "uv_build"
+
+[tool.ruff]
+line-length = 88
+
+[tool.ruff.lint]
+extend-select = ["B", "C4", "DTZ", "LOG", "G", "PYI", "Q", "RET", "SIM", "ARG", "PTH", "I", "N", "E", "W", "F", "PLE", "PLW", "UP", "RUF", "TRY"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**/*.py" = ["TRY003"]
