@@ -117,7 +117,14 @@ class CypherBuilder:
     def traverse(
         node_id: NodeId, depth: int, edge_types: list[str]
     ) -> tuple[str, dict]:
-        bounded_depth = max(1, depth)
+        bounded_depth = max(0, depth)
+        if bounded_depth == 0:
+            statement = (
+                "MATCH (start {_node_id: $node_id}) "
+                "RETURN [start] AS nodes, [] AS edges"
+            )
+            return statement, {"node_id": str(node_id), "edge_types": edge_types}
+
         relation_pattern = f"[*1..{bounded_depth}]"
         if edge_types:
             type_pattern = "|".join(edge_types)

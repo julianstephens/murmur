@@ -19,7 +19,7 @@ class SchemaValidator:
                 raise SchemaConflictError(msg)
             seen.add(definition.name)
 
-        seen_edges = set(existing_types)
+        seen_edges: set[str] = set()
         for definition in extension_edges:
             if definition.name in seen_edges:
                 msg = f"Edge type already exists: {definition.name}"
