@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import threading
 from dataclasses import dataclass
+from types import TracebackType
 from typing import Any
 
 from .backends.base import BackendAdapter
@@ -43,7 +44,12 @@ class BlackboardTransaction:
             connection_context=connection_context, is_nested=False
         )
 
-    def __exit__(self, exc_type, exc, tb) -> bool:
+    def __exit__(
+        self,
+        exc_type: type[BaseException] | None,
+        exc_val: BaseException | None,
+        exc_tb: TracebackType | None,
+    ) -> bool:
         depth = getattr(self._state, "depth", 0)
         if depth <= 0:
             return False

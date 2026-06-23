@@ -19,8 +19,8 @@ class Node:
     node_type: str
     properties: dict[str, PropertyValue] = field(default_factory=dict)
     status: str | None = None
-    created_at: datetime = field(default_factory=datetime.utcnow)
-    updated_at: datetime = field(default_factory=datetime.utcnow)
+    created_at: datetime = field(default_factory=lambda: datetime.now(datetime.UTC))
+    updated_at: datetime = field(default_factory=lambda: datetime.now(datetime.UTC))
 
 
 @dataclass(slots=True)
